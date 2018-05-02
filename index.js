@@ -8,9 +8,6 @@ const profiles = require("./profiles.json")
 //USEROBJECT = {"name", "mainweapon", "ranks":RANKOBJECT, "level", "friendcode"}
 //RANKOBJECT = {"clamblitz", "rainmaker", "splatzones", "towercontrol"}
 
-if(profiles["battles"] === undefined) {
-    profiles["battles"] = []
-}
 
 splattimgames = [
     {
@@ -50,6 +47,14 @@ bot.on("ready", async function() {
     console.log("updated everything")
 })
 
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
 function makeProfile(id) {
     //i copied this from a site:tm:
     const getCircularReplacer = () => {
@@ -85,7 +90,7 @@ function makeBattleProfile(id) {
       };
 //copied end
 //username, level, ranked
-profiles.battles[id] = {"username":bot.users.get(id).username,"level":1,"xp":0,"ranked":"N/A"}
+profiles.battles[id] = {"username":bot.users.get(id).username,"level":1,"xp":0,"ranked":"N/A","coins":0}
 fs.writeFile("./profiles.json", JSON.stringify(profiles, getCircularReplacer()))
 }
 
@@ -124,7 +129,7 @@ async function updateStats(timstats0, timstats1, timstats2) {
     timmessages = [,,]
     if(timstats0 !== null) {
         bot.channels.get("436618450585255964").fetchMessage("436884425771319321").then(m => {
-            m.edit("**TimStats**\nVersion: "+timstats0.version+"\nPing (may be inaccurate): "+bot.ping+"\nhe does it!")
+            m.edit("**TimStats**\nVersion: "+timstats0.version+"\nPing (may be inaccurate): "+bot.ping+"ms\nProfiles made: "+timstats0.profilessize+"\nBattle accounts made: "+timstats0.battleprofilessize+"\nhe does it!")
         })
     }
     if(timstats1 !== null) {
@@ -140,7 +145,7 @@ async function updateStats(timstats0, timstats1, timstats2) {
 }
 
 async function refreshStats() {
-    timstats = [{version:"0.5 Alpha"},{members: bot.guilds.get("433670865817829387").members.array().length},{avaivable: false}]
+    timstats = [{version:"0.5 Alpha",profilessize:Object.size(profiles)-1,battleprofilessize:Object.size(profiles.battles)},{members: bot.guilds.get("433670865817829387").members.array().length},{avaivable: false}]
 }
 
 
@@ -161,7 +166,7 @@ bot.on("message", msg => {
 
 //!!
 //REMOVE!!!
-if(msg.author.id === "209765088196821012") {
+//if(msg.author.id === "209765088196821012") {
 //REMOVE!!!
 //!!
 
@@ -174,7 +179,7 @@ if(msg.author.id === "209765088196821012") {
             msg.channel.send("```\nsplat battle tw\nTurf War, the best mode for beginners. Start here!\nsplat battle rk\nRanked, only avaivable at Level 10+. And is, well, ranked battles.\n"+profiles.battles[msg.author.id].username+"'s level: "+profiles.battles[msg.author.id].level+"\nRanked rank:"+profiles.battles[msg.author.id].ranked+"\n```")
         } else {
             if(profiles.battles[msg.author.id].onCooldown) {
-                msg.reply("Chill out a bit before starting a new battle!!\nWait "+getTimeLeft(profiles.battles[msg.author.id].cooldownTimeout)+"s before returning to battle again.")
+                msg.reply("⏱ Wait **"+getTimeLeft(profiles.battles[msg.author.id].cooldownTimeout)+"s** before returning to battle again. ")
             } else {
             switch(params[1]) {
                 case "tw":
@@ -184,6 +189,7 @@ if(msg.author.id === "209765088196821012") {
 
                 if(Math.random()>0.5) {
                     var xp = Math.round((Math.random()*400)+1000)
+                    var coins = Math.floor(Math.random()*xp*0.9+1000)
                     if((profiles.battles[msg.author.id].xp+xp)>(profiles.battles[msg.author.id].level*3000)) {
                         var newxp = (profiles.battles[msg.author.id].xp+xp)-(profiles.battles[msg.author.id].level*3000)
                         var newlevel = profiles.battles[msg.author.id].level+1
@@ -193,6 +199,7 @@ if(msg.author.id === "209765088196821012") {
                         var newlevel = profiles.battles[msg.author.id].level
                         var newlevelachievedstring = ""
                     }
+                    var newcoins = profiles.battles[msg.author.id].coins+coins
                     var overallinked = Math.round((Math.random()*9)+90)
                     var percentage1 = Math.round((Math.random()*80)+10)
                     var percentage2 = overallinked-percentage1
@@ -200,6 +207,8 @@ if(msg.author.id === "209765088196821012") {
                     var profile = profiles.battles[msg.author.id]
                     profile["xp"] = newxp
                     profile["level"] = newlevel
+                    profile["coins"] = newcoins
+                    profiles.battles[msg.author.id] = profile
 
                     if(percentage1>percentage2) {
                         var formattedString="Good Guys: "+percentage1+"%\nBad Guys: "+percentage2+"%"
@@ -213,7 +222,7 @@ if(msg.author.id === "209765088196821012") {
                         fields: [
                             {
                                 name: "Victory!",
-                                value: "Level "+newlevel+" "+newxp+"xp/"+newlevel*3000+"xp (+"+xp+"xp) "+newlevelachievedstring
+                                value: "Level "+newlevel+" "+newxp+"xp/"+newlevel*3000+"xp (+"+xp+"xp) "+newlevelachievedstring+"\n"+newcoins+" (+"+coins+")"
                             },
                             {
                                 name: "Results",
@@ -261,6 +270,93 @@ if(msg.author.id === "209765088196821012") {
                     }})
                 }
                 break;
+                case "rk":
+                profiles.battles[msg.author.id]["onCooldown"] = true
+                profiles.battles[msg.author.id]["cooldownTimeout"] = setTimeout(function() {cooldownStop(msg.author.id)},240000)
+
+                if(Math.random()>0.5) {
+                    var xp = Math.round((Math.random()*400)+1000)
+                    var coins = Math.floor(Math.random()*xp*0.9+1000)
+                    if((profiles.battles[msg.author.id].xp+xp)>(profiles.battles[msg.author.id].level*3000)) {
+                        var newxp = (profiles.battles[msg.author.id].xp+xp)-(profiles.battles[msg.author.id].level*3000)
+                        var newlevel = profiles.battles[msg.author.id].level+1
+                        var newlevelachievedstring = "[Levelled Up!]"
+                    } else {
+                        var newxp = profiles.battles[msg.author.id].xp+xp
+                        var newlevel = profiles.battles[msg.author.id].level
+                        var newlevelachievedstring = ""
+                    }
+                    var newcoins = profiles.battles[msg.author.id].coins+coins
+                    var overallinked = Math.round((Math.random()*9)+90)
+                    var percentage1 = Math.round((Math.random()*80)+10)
+                    var percentage2 = overallinked-percentage1
+
+                    var profile = profiles.battles[msg.author.id]
+                    profile["xp"] = newxp
+                    profile["level"] = newlevel
+                    profile["coins"] = newcoins
+                    profiles.battles[msg.author.id] = profile
+
+                    if(percentage1>percentage2) {
+                        var formattedString="Good Guys: "+percentage1+"%\nBad Guys: "+percentage2+"%"
+                    } else {
+                        var formattedString="Good Guys: "+percentage2+"%\nBad Guys: "+percentage1+"%"
+                    }
+                    updateProfiles()
+                    msg.channel.send("Battle Results",{embed: {
+                        title: "Ranked Battle",
+                        description: "Please wait 4 minutes before starting another battle.",
+                        fields: [
+                            {
+                                name: "Victory!",
+                                value: "Level "+newlevel+" "+newxp+"xp/"+newlevel*3000+"xp (+"+xp+"xp) "+newlevelachievedstring+"\n"+newcoins+" (+"+coins+")"
+                            },
+                            {
+                                name: "Results",
+                                value: formattedString
+                            }
+                        ]
+                    }})
+                } else {
+                    var xp = Math.round((Math.random()*300))
+                    if((profiles.battles[msg.author.id].xp+xp)>(profiles.battles[msg.author.id].level*3000)) {
+                        var newxp = (profiles.battles[msg.author.id].xp+xp)-(profiles.battles[msg.author.id].level*3000)
+                        var newlevel = profiles.battles[msg.author.id].level+1
+                        var newlevelachievedstring = "[Levelled Up!]"
+                    } else {
+                        var newxp = profiles.battles[msg.author.id].xp+xp
+                        var newlevel = profiles.battles[msg.author.id].level
+                        var newlevelachievedstring = ""
+                    }
+
+                    var profile = profiles.battles[msg.author.id]
+                    profile["xp"] = newxp
+                    profile["level"] = newlevel
+
+                    var overallinked = Math.round((Math.random()*9)+90)
+                    var percentage1 = Math.round((Math.random()*80)+10)
+                    var percentage2 = overallinked-percentage1
+                    if(percentage2>percentage1) {
+                        var formattedString="Good Guys: "+percentage1+"%\nBad Guys: "+percentage2+"%"
+                    } else {
+                        var formattedString="Good Guys: "+percentage2+"%\nBad Guys: "+percentage1+"%"
+                    }
+                    msg.channel.send("Battle Results",{embed: {
+                        title: "Ranked Battle",
+                        description: "Please wait 4 minutes before starting another battle.",
+                        fields: [
+                            {
+                                name: "Loss...",
+                                value: "Level "+newlevel+" "+newxp+"xp/"+newlevel*3000+"xp (+"+xp+"xp) "+newlevelachievedstring
+                            },
+                            {
+                                name: "Results",
+                                value: formattedString
+                            }
+                        ]
+                    }})
+                }
+                break;
                 default:
                 msg.channel.send("Invalid syntax!! ```\nsplat battle tw\nTurf War, the best mode for beginners. Start here!\nsplat battle rk\nRanked, only avaivable at Level 10+. And is, well, ranked battles.\n"+profiles.battles[msg.author.id].username+"'s level: "+profiles.battles[msg.author.id].level+"\nRanked rank:"+profiles.battles[msg.author.id].ranked+"\n```")
                 break;
@@ -271,7 +367,7 @@ if(msg.author.id === "209765088196821012") {
 
 //!!
 //REMOVE!!
-}
+//}
 //REMOVE!!
 //!!
 
@@ -400,6 +496,7 @@ if(msg.author.id === "209765088196821012") {
             var fcpattern = new RegExp("(SW-)?(\d{4}-){2}\d{4}")
             var playtimepattern = new RegExp("\d+\s?([hH](our(s)?)?)?")
 
+            var replyProfile = true
             switch(params[1].toLowerCase()) {
                 case "level":
                 if(levelpattern.test(params[2])) {
@@ -465,7 +562,9 @@ if(msg.author.id === "209765088196821012") {
                 break;
                 default:
                 msg.reply("That isn't a valid field... Make sure to type it without spaces!")
+                var replyProfile = false
             }
+            if(replyProfile) {
             updateProfiles()
             msg.channel.send('Here\'s your new profile!',{embed: {
                 thumbnail: {
@@ -526,6 +625,7 @@ if(msg.author.id === "209765088196821012") {
                   name: 'avatar.jpg'
                }]}
               )
+            }
         }
     }
 
@@ -645,6 +745,17 @@ Mulberry - 436231996386181123
     }
 }}
 
+    if(msg.content === "splat updatestats") {
+        if  (msg.author.id === "209765088196821012" || msg.author.id === "239493437089513474") {
+            updateProfiles()
+            refreshStats()
+            updateStats(timstats[0],timstats[1],timstats[2])
+            msg.channel.sendMessage("done!\n(note: this command is owner only so dont try it)")
+        } else {
+            msg.channel.sendMessage("i JUST said its owner only, but you HAD to test it.")
+        }
+    }
+
     if (msg.content.startsWith("splat debug ") === true) {
         if (msg.author.id === "209765088196821012" || msg.author.id === "239493437089513474") {
             try {
@@ -692,5 +803,5 @@ bot.on("guildMemberRemove", bember => {
     updateStats(timstats[0],timstats[1],timstats[2])
 })
 
-//removed for well, um, OBVIOUS reasons.
+//removed for well, em, OBVIOUS reasons.
 bot.login("")
