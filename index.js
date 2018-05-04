@@ -142,4 +142,4 @@ bot.on("guildMemberRemove", bember => {
 })
 
 //removed for well, em, OBVIOUS reasons.
-bot.login("")
+bot.login("~/token.json")
