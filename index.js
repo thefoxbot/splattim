@@ -141,5 +141,5 @@ bot.on("guildMemberRemove", bember => {
     updateStats(timstats[0],timstats[1],timstats[2])
 })
 
-//removed for well, em, OBVIOUS reasons.
-bot.login("~/token.json")
+//aaa i keep having errors with this
+bot.login(require("./token.json"))
