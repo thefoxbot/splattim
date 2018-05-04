@@ -54,8 +54,15 @@ Object.size = function(obj) {
     return size;
 };
 
+function clean(text) {
+    if (typeof(text) === "string")
+        return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
+    else
+        return text;
+}
+
 async function refreshStats() {
-    timstats = [{version:"0.5 Alpha",profilessize:Object.size(profiles)-1,battleprofilessize:Object.size(profiles.battles)},{members: bot.guilds.get("433670865817829387").members.array().length},{avaivable: false}]
+    timstats = [{version:"0.6 Alpha",profilessize:Object.size(profiles)-1,battleprofilessize:Object.size(profiles.battles)},{members: bot.guilds.get("433670865817829387").members.array().length},{avaivable: false}]
 }
 
 bot.on("message", msg => {
@@ -63,7 +70,7 @@ bot.on("message", msg => {
 
 modules.core.cmds(msg, params, bot)
 modules.debug.cmds(msg, params, bot, profiles)
-modules.other.cmds(msg, params, bot, profiles)
+modules.other.cmds(msg, params, bot, profiles, Object)
 
 //modules stuff, not putting this in a serprate module though
 if(msg.content === "splat reloadmodules") {

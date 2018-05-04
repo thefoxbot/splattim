@@ -1,4 +1,4 @@
-exports.cmds = function(msg, params, bot, profiles) {
+exports.cmds = function(msg, params, bot, profiles, Object) {
 //VARIABITCHES
 const fs = require("fs")
 
@@ -19,6 +19,25 @@ function makeProfile(id) {
       };
 //copied end
 profiles[id] = {"name":bot.users.get(id).username,"ranks":{"dontbecircular":true}}
+fs.writeFile("./profiles.json", JSON.stringify(profiles, getCircularReplacer()))
+}
+
+function makeChallengeProfile(id) {
+    //i copied this from a site:tm:
+    const getCircularReplacer = () => {
+        const seen = new WeakSet;
+        return (key, value) => {
+          if (typeof value === "object" && value !== null) {
+            if (seen.has(value)) {
+              return;
+            }
+            seen.add(value);
+          }
+          return value;
+        };
+      };
+//copied end
+profiles[id] = {"name":bot.users.get(id).username,"points":0}
 fs.writeFile("./profiles.json", JSON.stringify(profiles, getCircularReplacer()))
 }
 
@@ -474,12 +493,6 @@ Mulberry - 436231996386181123
     }
 }}
 
-//!!
-//REMOVE!!!
-//if(msg.author.id === "209765088196821012") {
-//REMOVE!!!
-//!!
-
 //SHITFESTS AKA BATTLES
 if(msg.content.startsWith("splat battle")) {
     if(profiles.battles[msg.author.id] === undefined) {
@@ -535,7 +548,7 @@ if(msg.content.startsWith("splat battle")) {
                     fields: [
                         {
                             name: "Victory!",
-                            value: "Level "+newlevel+" "+newxp+"xp/"+newlevel*3000+"xp (+"+xp+"xp) "+newlevelachievedstring+"\n"+newcoins+" (+"+coins+")"
+                            value: "Level "+newlevel+" "+newxp+"xp/"+newlevel*3000+"xp (+"+xp+"xp) "+newlevelachievedstring+"\n"+newcoins+"c (+"+coins+"c)"
                         },
                         {
                             name: "Results",
@@ -573,7 +586,7 @@ if(msg.content.startsWith("splat battle")) {
                     fields: [
                         {
                             name: "Loss...",
-                            value: "Level "+newlevel+" "+newxp+"xp/"+newlevel*3000+"xp (+"+xp+"xp) "+newlevelachievedstring
+                            value: "Level "+newlevel+" "+newxp+"xp/"+newlevel*3000+"xp (+"+xp+"xp) "+newlevelachievedstring+"\n"+profiles.battles[msg.author.id].coins+"c"
                         },
                         {
                             name: "Results",
@@ -584,11 +597,12 @@ if(msg.content.startsWith("splat battle")) {
             }
             break;
             case "rk":
+            if(profiles.battles[msg.author.id].level >= 10) {
             profiles.battles[msg.author.id]["onCooldown"] = true
             profiles.battles[msg.author.id]["cooldownTimeout"] = setTimeout(function() {cooldownStop(msg.author.id)},240000)
 
             if(Math.random()>0.5) {
-                var xp = Math.round((Math.random()*400)+1000)
+                var xp = Math.round((Math.random()*600)+1000)
                 var coins = Math.floor(Math.random()*xp*0.9+1000)
                 if((profiles.battles[msg.author.id].xp+xp)>(profiles.battles[msg.author.id].level*3000)) {
                     var newxp = (profiles.battles[msg.author.id].xp+xp)-(profiles.battles[msg.author.id].level*3000)
@@ -631,7 +645,7 @@ if(msg.content.startsWith("splat battle")) {
                     ]
                 }})
             } else {
-                var xp = Math.round((Math.random()*300))
+                var xp = Math.round((Math.random()*500))
                 if((profiles.battles[msg.author.id].xp+xp)>(profiles.battles[msg.author.id].level*3000)) {
                     var newxp = (profiles.battles[msg.author.id].xp+xp)-(profiles.battles[msg.author.id].level*3000)
                     var newlevel = profiles.battles[msg.author.id].level+1
@@ -669,6 +683,9 @@ if(msg.content.startsWith("splat battle")) {
                     ]
                 }})
             }
+        } else {
+            msg.channel.sendMessage("you arent level 10 yet! you cant do ranked yet.")
+        }
             break;
             default:
             msg.channel.send("Invalid syntax!!\n```md\n< splat battle tw >\nTurf War, the best mode for beginners. Start here!\n< splat battle rk >\nRanked, only avaivable at Level 10+. And is, well, ranked battles.\n#"+profiles.battles[msg.author.id].username+"'s Stats\nLevel: "+profiles.battles[msg.author.id].level+"\nCoins: "+profiles.battles[msg.author.id].coins+"\nRank:"+profiles.battles[msg.author.id].ranked+"\n< he does it! SplatTimBattles 0.2 >```")
@@ -678,12 +695,34 @@ if(msg.content.startsWith("splat battle")) {
 }
 }
 
-//!!
-//REMOVE!!
-//}
-//REMOVE!!
-//!!
+if(profiles["points"] === undefined) {
+    profiles["points"] = {}
+}
+
+//CHALLENGE POINTS
+if(msg.content.startsWith("splat point")) {
+
+    if(profiles["points"][params[1]] === undefined) {
+        profiles["points"][params[1]] = {}
+        profiles["points"][params[1]]["points"] = 1
+        profiles["points"][params[1]]["username"] = bot.users.get(params[1]).username
+    }
+
+    if(params[0].endsWith("+")) {
+        profiles["points"][params[1]].points++
+        msg.channel.sendMessage("added a point to the user!")
+    } else {
+        profiles["points"][params[1]]--
+        msg.channel.sendMessage("deleted a point from the user!")
+    }
+
+    updateProfiles()
+}
+
+/*if(msg.content.startsWith("splat points")) {
+    msg.channel.sendMessage(Object.values(profiles.points).map(u => "\n"+u.username+" - "+u.points))
+}*/
 
 //UPDATE THOSE BITCHES
-GLOBAL.profiles = profiles
+global.profiles = profiles
 }
