@@ -1,2 +1,3 @@
-# splattim
-a splatoon bot made solely for funsies (most features are made for the discord server "the ink crowd")
+# SplatTimGUI v1.0
+an electron gui for splat tim, solely for testing and electron learning
+splat tim version as of v1.0: Alpha 0.6

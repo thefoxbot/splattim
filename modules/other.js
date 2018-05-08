@@ -80,7 +80,7 @@ function updateProfiles() {
             };
           };
     //copied end
-    console.debug(profiles)
+    console.log(profiles)
     fs.writeFile("./profiles.json", JSON.stringify(profiles, getCircularReplacer()))
 }
 
@@ -381,7 +381,7 @@ splattimgames = [
         if(msg.guild.id === "433670865817829387") {
     if(msg.content.startsWith("splat color")) {
         if(params[1] === undefined) {
-            msg.channel.sendMessage("Usage:\n`splat color (color)`\nList of colors currently avaivable: https://cdn.discordapp.com/attachments/433670866304237579/436247145692135434/Screen_Shot_2018-04-18_at_19.30.59.png\nRemove colors with `splat color remove`\n**Note: type colors without spaces. Tim does not know what a space is.**")
+            msg.channel.sendMessage("Usage:\n`splat color (color)`\nList of colors currently avaivable: https://cdn.discordapp.com/attachments/433670866304237579/436247145692135434/Screen_Shot_2018-04-18_at_19.30.59.png\n**EXTRA COLOR UNTILL 13TH OF MAY:** Blurple, to celebrate Discord's Birthday!\nRemove colors with `splat color remove`\n**Note: type colors without spaces. Tim does not know what a space is.**")
         } else {
             if(msg.member.colorRole === null || params[1].toLowerCase() === "remove") {
             switch(params[1].toLowerCase()) {
@@ -455,6 +455,10 @@ splattimgames = [
                 break;
                 case "mulberry":
                 msg.member.addRole('436231996386181123')
+                msg.reply("Success!")
+                break;
+                case "blurple":
+                msg.member.addRole('442759219591249931')
                 msg.reply("Success!")
                 break;
                 case "remove":

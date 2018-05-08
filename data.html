@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+      <meta charset="UTF-8">
+      <title>Splat Tim GUI</title>
+    </head>
+    <script>
+      evalAvailable = false
+      function eval() {
+        document.getElementById('evaldata').innerHTML = document.getElementById('input').innerHTML
+        evalAvailable = true
+        document.getElementById('output').innerHTML = 'hold up'
+      }
+      function evalCheck() {
+        return [evalAvailable, document.getElementById('input').innerText]
+      }
+    </script>
+    <style>
+    #hedoesit {
+      color: black;
+      transition: color .3s ease-in-out;
+      -moz-transition: color .3s ease-in-out;
+      text-decoration: none;
+    }
+    
+    #hedoesit:hover {
+      -webkit-animation: zomg 0.5s infinite;
+      animation: zomg 0.5s infinite;
+    }
+    
+    @-webkit-keyframes zomg {
+      0%, 100% { color: #ff0000; }
+      16%      { color: #fbff00; }
+      32%      { color: #00ff00; }
+      48%      { color: #00ffdd; }
+      64%      { color: #0077ff; }
+      80%      { color: #b536ff; }
+    }
+    @keyframes zomg {
+      0%, 100% { color: #ff0000; }
+      16%      { color: #fbff00; }
+      32%      { color: #00ff00; }
+      48%      { color: #00ffdd; }
+      64%      { color: #0077ff; }
+      80%      { color: #b536ff; }
+    }
+
+    .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -60px;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: black transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+#logs {
+  border: 2px solid grey;
+  background-color: black;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+  padding: 5px;
+  color: white;
+  height: 200px;
+  overflow-y: scroll;
+}
+#output {
+  border: 2px solid grey;
+  background-color: black;
+  border-radius: 25px;
+  padding: 5px;
+  color: white;
+  height: 3em;
+  overflow-y: auto;
+}
+#input {
+  border: 2px solid grey;
+  background-color: black;
+  border-radius: 25px;
+  padding: 5px;
+  color: white;
+}
+.bottomtext {
+    position: relative;
+}
+
+.bottomtext span {
+   position: absolute;
+   bottom: 0;
+   right: 0;
+}
+.evaldata {
+  position: absolute;
+  left: 10000px
+}
+  </style>
+    <body id="rainbg" style="background-color: greenyellow">
+    <div id="content" style="border: 2px dotted #000000; height: 97vh; padding: 10px; margin: 10px; background-color: white">
+      <h1>Splat Tim GUI</h1>
+      <div id="timstats"><h2>TimStats</h2>loading...</div>
+      <div id="serverstats"><h2>ServStats</h2>loading...</div>
+      <div id="splatstats"><h2>SplatStats</h2>loading...</div>
+      <h1>CMD Logs</h1>
+      <div id="logs">
+        updated everything<br>
+        O. K.!<br>
+        created windows<br>
+      </div>
+      <h1>Eval</h1>
+      <b>Input</b><br>
+      <input type="text" id="input"><br>
+      <b>Output</b><br>
+      <div id="output"></div><br>
+      <button onclick="eval()">DO IT</button><br>
+      <div id="evaldata"></div>
+      <div id="bottomtext"><b id="hedoesit">he does it!</b><br>bot and gui by TheFox</div>
+    </div>
+    </body>
+  </html>
