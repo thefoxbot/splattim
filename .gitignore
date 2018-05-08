@@ -6,3 +6,5 @@ token\.json
 splattim\.code-workspace
 
 \.vscode/launch\.json
+
+/node_modules/
