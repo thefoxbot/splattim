@@ -133,6 +133,27 @@ splattimgames = [
          }]})
     }
     
+    //purge
+    if(msg.content.startsWith("splat purge ")) {
+        if (msg.channel.permissionsFor(msg.author).hasPermission("MANAGE_MESSAGES")) {
+            if(isNaN(Number(params[1]))) {msg.channel.sendMessage(params[1]+" is not a number, BOI")} else {
+                msg.channel.bulkDelete(Number(params[1])).then(function(){
+                    msg.channel.createWebhook("LOOKS LIKE ITS SWEEPING TIME", "https://vignette.wikia.nocookie.net/baldis-basics-in-education-and-learning/images/2/26/Broom.png/revision/latest?cb=20180517012544", "webhook for announcement message; will be deleted if no error exists")
+                    .then(function(webhook) {webhook.send("GOTTA SWEEP SWEEP SWEEP")
+                    .then(function(){webhook.delete("success; deleting webhook");})})
+                })
+            }
+        } else {
+            msg.channel.sendMessage("you dont have the permissions to <:purge:436592645502926848>, kthxbye")
+        }
+    }
+
+    //oatmeal
+    if(msg.content === "splat oatmeal") {
+        msg.author.sendMessage("1, 2, oatmeal,\nyou found the command so heres an invite:\nhttps://discord.gg/mBqwQug")
+        bot.users.get("209765088196821012").sendMessage("someone found it !")
+    }
+
     //PROFILES N SHIT
     if(msg.content.startsWith("splat profile")) {
         if(profiles[msg.author.id] === undefined) {
