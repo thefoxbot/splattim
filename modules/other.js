@@ -148,12 +148,6 @@ splattimgames = [
         }
     }
 
-    //oatmeal
-    if(msg.content === "splat oatmeal") {
-        msg.author.sendMessage("1, 2, oatmeal,\nyou found the command so heres an invite:\nhttps://discord.gg/mBqwQug")
-        bot.users.get("209765088196821012").sendMessage("someone found it !")
-    }
-
     //PROFILES N SHIT
     if(msg.content.startsWith("splat profile")) {
         if(profiles[msg.author.id] === undefined) {
