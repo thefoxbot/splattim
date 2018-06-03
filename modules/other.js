@@ -138,9 +138,9 @@ splattimgames = [
         if (msg.channel.permissionsFor(msg.author).hasPermission("MANAGE_MESSAGES")) {
             if(isNaN(Number(params[1]))) {msg.channel.sendMessage(params[1]+" is not a number, BOI")} else {
                 msg.channel.bulkDelete(Number(params[1])).then(function(){
-                    msg.channel.createWebhook("LOOKS LIKE ITS SWEEPING TIME", "https://vignette.wikia.nocookie.net/baldis-basics-in-education-and-learning/images/2/26/Broom.png/revision/latest?cb=20180517012544", "webhook for announcement message; will be deleted if no error exists")
+                    msg.channel.createWebhook("LOOKS LIKE ITS SWEEPING TIME", "https://vignette.wikia.nocookie.net/baldis-basics-in-education-and-learning/images/2/26/Broom.png/revision/latest?cb=20180517012544", "webhook for purge announcement -- messages purged by "+msg.author.username+"#"+msg.author.discriminator)
                     .then(function(webhook) {webhook.send("GOTTA SWEEP SWEEP SWEEP")
-                    .then(function(){webhook.delete("success; deleting webhook");})})
+                    .then(function(){webhook.delete("success; deleting webhook -- messages purged by "+msg.author.username+"#"+msg.author.discriminator);})})
                 })
             }
         } else {
