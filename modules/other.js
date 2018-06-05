@@ -1,6 +1,8 @@
 exports.cmds = function(msg, params, bot, profiles, Object) {
 //VARIABITCHES
 const fs = require("fs")
+vcReady = true
+var opus = require('opusscript')
 
 //FUNCTIONS
 function makeProfile(id) {
@@ -80,7 +82,7 @@ function updateProfiles() {
             };
           };
     //copied end
-    fs.writeFile("./profiles.json", JSON.stringify(profiles, getCircularReplacer()))
+    fs.writeFile("./profiles.json", JSON.stringify(profiles))
 }
 
 function undeString(stringthing) {
@@ -132,7 +134,67 @@ splattimgames = [
             name: 'hedoesit.png'
          }]})
     }
-    
+
+    //WOOMY
+    /*if(msg.content === "splat woomy" && vcReady) {
+        if(msg.member.voiceChannel === undefined) {
+            msg.reply("you aren't in a vc!")
+        } else {
+            vcReady = false
+            var voiceChannel = msg.member.voiceChannel
+            voiceChannel.join().then(connection => {
+                const dispatcher = connection.playFile('./woomy.mp3')
+                dispatcher.on("end", end => {
+                    voiceChannel.leave()
+                    vcReady = true
+                })
+            }).catch(err => console.log(err))
+        }
+    }
+    */
+
+    //voiceclips
+    if(msg.content.startsWith("splat vclips")) {
+        if(params[1] === undefined) {
+            msg.channel.send("Current available voiceclips:\n```\nblj\nwoomy\nngyes\nbup\noatmeal\n```\nUse a voiceclip with `splat vclips [name]`")
+        } else {
+            switch(params[1]) {
+                case "blj":
+                var file = './blj.mp3'
+                break;
+                case "woomy":
+                var file = './woomy.mp3'
+                break;
+                case "ngyes":
+                var file = './ngyes.mp3'
+                break;
+                case "bup":
+                var file = './bup.mp3'
+                break;
+                case "oatmeal":
+                var file = './oatmeal.mp3'
+                break;
+                default:
+                var file = null
+            }
+            if(file === null) {
+                msg.channel.send("That's not an available voice clip!")
+            } else {
+                if(vcReady) {
+                    vcReady = false
+                    var voiceChannel = msg.member.voiceChannel
+                    voiceChannel.join().then(connection => {
+                        const dispatcher = connection.playFile(file)
+                        dispatcher.on("end", end => {
+                            voiceChannel.leave()
+                            vcReady = true
+                        })
+                    }).catch(err => console.log(err))
+                }
+            }
+        }
+    }
+
     //purge
     if(msg.content.startsWith("splat purge ")) {
         if (msg.channel.permissionsFor(msg.author).hasPermission("MANAGE_MESSAGES")) {
@@ -227,16 +289,32 @@ splattimgames = [
                 msg.channel.send(profile.name+"'s Switch friend code is "+undeString(profile.friendcode))
                 break;
                 case "rainmaker":
-                msg.channel.send(profile.name+"'s rank in Rainmaker is "+undeString(profile.ranks.rainmaker))
+                if(profile.ranks.rainmaker === "|") {
+                    msg.channel.send(profile.name+" decided to instead use the ranking fields for loss.")
+                } else {
+                    msg.channel.send(profile.name+"'s rank in Rainmaker is "+undeString(profile.ranks.rainmaker))
+                }
                 break;
                 case "clamblitz":
-                msg.channel.send(profile.name+"'s rank in Clam Blitz is "+undeString(profile.ranks.clamblitz))
+                if(profile.ranks.clamblitz === "| |") {
+                    msg.channel.send(profile.name+" decided to instead use the ranking fields for loss.")
+                } else {
+                    msg.channel.send(profile.name+"'s rank in Clam Blitz is "+undeString(profile.ranks.clamblitz))
+                }
                 break;
                 case "splatzones":
-                msg.channel.send(profile.name+"'s rank in Splat Zones is "+undeString(profile.ranks.splatzones))
+                if(profile.ranks.splatzones === "| _") {
+                    msg.channel.send(profile.name+" decided to instead use the ranking fields for loss.")
+                } else {
+                    msg.channel.send(profile.name+"'s rank in Splat Zones is "+undeString(profile.ranks.splatzones))
+                }
                 break;
                 case "towercontrol":
-                msg.channel.send(profile.name+"'s rank in Tower Control is "+undeString(profile.ranks.towercontrol))
+                if(profile.ranks.towercontrol === "| |") {
+                    msg.channel.send(profile.name+" decided to instead use the ranking fields for loss.")
+                } else {
+                    msg.channel.send(profile.name+"'s rank in Tower Control is "+undeString(profile.ranks.towercontrol))
+                }
                 break;
                 case "bio":
                 msg.channel.send(profile.name+"'s bio is: ```\n"+undeString(profile.bio)+"\n```")
@@ -246,6 +324,15 @@ splattimgames = [
                 break;
                 case "salmonrunrank":
                 msg.channel.send(profile.name+"'s Salmon Run rank is ```\n"+undeString(profile.salmonrun)+"\n```")
+                break;
+                case "loss":
+                msg.reply("found")
+                profiles[msg.author.id].ranks["rainmaker"] = "|"
+                profiles[msg.author.id].ranks["clamblitz"] = "| |"
+                profiles[msg.author.id].ranks["splatzones"] = "| _"
+                profiles[msg.author.id].ranks["towercontrol"] = "| |"
+                profiles[msg.author.id].bio = "i like loss"
+                updateProfiles()
                 break;
                 default:
                 msg.reply("That isn't a valid field...")

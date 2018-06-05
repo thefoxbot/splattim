@@ -8,3 +8,5 @@ splattim\.code-workspace
 \.vscode/launch\.json
 
 /node_modules/
+
+package-lock\.json
