@@ -1,9 +1,8 @@
-exports.cmds = function(msg, params, bot, profiles, Object) {
+exports.cmds = function(msg, params, bot, profiles, vcReady) {
 //VARIABITCHES
 const fs = require("fs")
-vcReady = true
 var opus = require('opusscript')
-
+var request = require('request')
 //FUNCTIONS
 function makeProfile(id) {
     //i copied this from a site:tm:
@@ -21,7 +20,7 @@ function makeProfile(id) {
       };
 //copied end
 profiles[id] = {"name":bot.users.get(id).username,"ranks":{"dontbecircular":true}}
-fs.writeFile("./profiles.json", JSON.stringify(profiles, getCircularReplacer()))
+fs.writeFile("./profiles.json", JSON.stringify(profiles), function() {return true})
 }
 
 function makeChallengeProfile(id) {
@@ -40,7 +39,7 @@ function makeChallengeProfile(id) {
       };
 //copied end
 profiles[id] = {"name":bot.users.get(id).username,"points":0}
-fs.writeFile("./profiles.json", JSON.stringify(profiles, getCircularReplacer()))
+fs.writeFile("./profiles.json", JSON.stringify(profiles), function() {return true})
 }
 
 function makeBattleProfile(id) {
@@ -60,7 +59,7 @@ function makeBattleProfile(id) {
 //copied end
 //username, level, ranked
 profiles.battles[id] = {"username":bot.users.get(id).username,"level":1,"xp":0,"ranked":"N/A","coins":0,"id":id}
-fs.writeFile("./profiles.json", JSON.stringify(profiles, getCircularReplacer()))
+fs.writeFile("./profiles.json", JSON.stringify(profiles), function() {return true})
 }
 
 function getTimeLeft(timeout) {
@@ -82,7 +81,7 @@ function updateProfiles() {
             };
           };
     //copied end
-    fs.writeFile("./profiles.json", JSON.stringify(profiles))
+    fs.writeFile("./profiles.json", JSON.stringify(profiles), function() {return true})
 }
 
 function undeString(stringthing) {
@@ -97,43 +96,6 @@ function cooldownStop(id) {
     profiles.battles[id]["onCooldown"] = false
     profiles.battles[id]["cooldown"] = null
 }
-
-splattimgames = [
-    {
-      "name": "Splat Tim Party",
-      "description": "Do it with your friends!\nPlay in this minigame-based board game with friends as Splat Tim and his friends!",
-      "file": "./splattimposter.png"
-    },
-    {
-      "name": "Splat Tim Paradise",
-      "description": "This Splat Tim game is all about relaxing, but wait.. There's trouble at the beach! Splat Tim now has to save the beach from being destroyed!",
-      "file": "./splattimposter2.png"
-    },
-    {
-      "name": "Splat Tim Reloaded",
-      "description": "The Splat Tim trilogy, but revisited, with new content everywhere and better graphics! It's time for Splat Tim to do it again!",
-      "file": "./splattimposter3.png"
-    },
-    {
-      "name": "Splat Tim",
-      "description": "He does it! Splat Tim is the freshest kid-squid in town, ready for adventure! It's time for his adventure to begin in a far-away land from Inkopolis.",
-      "file": "./splattimposter4.png"
-    },
-    {
-      "name": "Splat Tim in Space",
-      "description": "He does it in space! Splat Tim has decided to leave Earth for a space adventure, saving a far-away planet from destruction!",
-      "file": "./splattimposter5.png"
-    }
-  ]
-
-    //TIM GAMES
-    if(msg.content==="splat timgame") {
-        var splattimgame = splattimgames[Math.floor(Math.random() * splattimgames.length)]
-        msg.channel.send("**"+splattimgame.name+"**\n"+splattimgame.description, {files: [{
-            attachment: splattimgame.file,
-            name: 'hedoesit.png'
-         }]})
-    }
 
     //WOOMY
     /*if(msg.content === "splat woomy" && vcReady) {
@@ -180,6 +142,9 @@ splattimgames = [
             if(file === null) {
                 msg.channel.send("That's not an available voice clip!")
             } else {
+                if(msg.member.voiceChannel === undefined) {
+                    msg.reply("you aren't in a vc!")
+                } else {
                 if(vcReady) {
                     vcReady = false
                     var voiceChannel = msg.member.voiceChannel
@@ -190,10 +155,13 @@ splattimgames = [
                             vcReady = true
                         })
                     }).catch(err => console.log(err))
+                } else {
+                    msg.reply("im already playing a voiceclip!! wait a bit")
                 }
             }
         }
     }
+}
 
     //purge
     if(msg.content.startsWith("splat purge ")) {
@@ -482,118 +450,58 @@ splattimgames = [
         if(msg.guild.id === "433670865817829387") {
     if(msg.content.startsWith("splat color")) {
         if(params[1] === undefined) {
-            msg.channel.sendMessage("Usage:\n`splat color (color)`\nList of colors currently avaivable: https://cdn.discordapp.com/attachments/433670866304237579/436247145692135434/Screen_Shot_2018-04-18_at_19.30.59.png\n**EXTRA COLOR UNTILL 13TH OF MAY:** Blurple, to celebrate Discord's Birthday!\nRemove colors with `splat color remove`\n**Note: type colors without spaces. Tim does not know what a space is.**") 
+            msg.channel.sendMessage("Usage:\n`splat color (color)`\nList of colors currently avaivable: https://cdn.discordapp.com/attachments/433670866304237579/436247145692135434/Screen_Shot_2018-04-18_at_19.30.59.png\nRemove colors with `splat color remove`\nThere may or may not be some secret colors.") 
         } else {
-            if(msg.member.colorRole === null || params[1].toLowerCase() === "remove") {
-            switch(params[1].toLowerCase()) {
-                case "pink":
-                msg.member.addRole('436230047355895808')
-                msg.reply("Success!")
-                break;
-                case "orange":
-                msg.member.addRole('436230156164661248')
-                msg.reply("Success!")
-                break;
-                case "canaryyellow":
-                msg.member.addRole('436230222250115072')
-                msg.reply("Success!")
-                break;
-                case "limegreen":
-                msg.member.addRole('436230302256463873')
-                msg.reply("Success!")
-                break;
-                case "emeraldgreen":
-                msg.member.addRole('436230360188321803')
-                msg.reply("Success!")
-                break;
-                case "skyblue":
-                msg.member.addRole('436230591185289242')
-                msg.reply("Success!")
-                break;
-                case "blue":
-                msg.member.addRole('436230747603468288')
-                msg.reply("Success!")
-                break;
-                case "violet":
-                msg.member.addRole('436230824510095381')
-                msg.reply("Success!")
-                break;
-                case "bloodorange":
-                msg.member.addRole('436230951358562314')
-                msg.reply("Success!")
-                break;
-                case "lemon":
-                msg.member.addRole('436231063019454464')
-                msg.reply("Success!")
-                break;
-                case "seafoam":
-                msg.member.addRole('436231129389989889')
-                msg.reply("Success!")
-                break;
-                case "greenapple":
-                msg.member.addRole('436231205537579018')
-                msg.reply("Success!")
-                break;
-                case "ocean":
-                msg.member.addRole('436231330431238165')
-                msg.reply("Success!")
-                break;
-                case "cerulean":
-                msg.member.addRole('436231463348994058')
-                msg.reply("Success!")
-                break;
-                case "indigo":
-                msg.member.addRole('436231570010013736')
-                msg.reply("Success!")
-                break;
-                case "neonpink":
-                msg.member.addRole('436231651165470720')
-                msg.reply("Success!")
-                break;
-                case "neongreen":
-                msg.member.addRole('436231723588517889')
-                msg.reply("Success!")
-                break;
-                case "mulberry":
-                msg.member.addRole('436231996386181123')
-                msg.reply("Success!")
-                break;
-                case "blurple": 
-                msg.member.addRole('442759219591249931') 
-                msg.reply("Success!") 
-                break;
-                case "remove":
-                msg.member.removeRole(msg.member.colorRole.id)
-                msg.reply("Removed color role")
-                break;
-                default:
-                msg.reply("Color role not found. Make sure that you type it without spaces!")
-                break;
+            var roles = {
+                "orange": "436230156164661248",
+                "blue": "436230747603468288",
+                "blurple": "442759219591249931",
+                "pink": "436230047355895808",
+                "neonpink": "436231651165470720",
+                "limegreen": "436230302256463873",
+                "skyblue": "436230591185289242",
+                "emeraldgreen": "436230360188321803",
+                "mulberry": "436231996386181123",
+                "canaryyellow": "436230222250115072",
+                "ocean": "436231330431238165",
+                "lemon": "436231063019454464",
+                "violet": "436230824510095381",
+                "cerulean": "436231463348994058",
+                "bloodorange": "436230951358562314",
+                "indigo": "436231570010013736",
+                "greenapple": "436231205537579018",
+                "neongreen": "436231723588517889",
+                "seafoam": "436231129389989889",
+                "remove": "0"
             }
+            var memberColorRoles = []
+                    msg.member.roles.array().forEach(val => {
+                        if(Object.keys(roles).includes(val.name.toLowerCase().replace(" ",""))) {
+                            memberColorRoles.push(val)
+                        }
+                    })
+            if(memberColorRoles.length < 1 || params[1] === 'remove') {
+                if(roles[params[1].replace(" ","").toLowerCase()] === undefined) {
+                    msg.channel.send("Invalid color!")
+                } else if (params[1] === 'remove') {
+                    if (memberColorRoles.length > 0) {
+                        msg.channel.send("Removing color roles...")
+                        memberColorRoles.forEach(cr => {
+                            msg.member.removeRole(cr.id)
+                            msg.channel.send("Removed "+cr.name)
+                        })
+                        msg.channel.send("Done.")
+                    } else {
+                        msg.channel.send("No color roles to remove!")
+                    }
+                } else {
+                    msg.channel.send("Adding "+msg.guild.roles.get(roles[params[1].replace(" ","").toLowerCase()]).name+"...")
+                    msg.member.addRole(roles[params[1].replace(" ","").toLowerCase()])
+                    msg.channel.send("Done.")
+                }
         } else {
             msg.reply("You already have a color role! Remove it with `splat color remove`")
         }
-
-/*
-Pink - 436230047355895808
-Orange - 436230156164661248
-Canary Yellow - 436230222250115072
-Lime Green - 436230302256463873
-Emerald Green - 436230360188321803
-Sky Blue - 436230591185289242
-Blue - 436230747603468288
-Violet - 436230824510095381
-Blood Orange - 436230951358562314
-Lemon - 436231063019454464
-Seafoam - 436231129389989889
-Green Apple - 436231205537579018
-Ocean - 436231330431238165
-Cerulean - 436231463348994058
-Indigo - 436231570010013736
-Neon Pink - 436231651165470720
-Neon Green - 436231723588517889
-Mulberry - 436231996386181123
-*/
         }
     }
 }}
@@ -824,10 +732,17 @@ if(msg.content.startsWith("splat point")) {
     updateProfiles()
 }
 
+if(msg.content === "splat inspirobot") {
+    request('http://inspirobot.me/api?generate=true',function(err,response,body) {
+        msg.channel.send({files: [body]})
+    })
+}
+
 /*if(msg.content.startsWith("splat points")) {
     msg.channel.sendMessage(Object.values(profiles.points).map(u => "\n"+u.username+" - "+u.points))
 }*/
 
 //UPDATE THOSE BITCHES
 global.profiles = profiles
+global.vcReady = vcReady
 }

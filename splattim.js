@@ -19,11 +19,32 @@ Object.keys(profiles.battles).forEach(function(key) {
 
 timstats = [null,null,null]
 
+function updateChannelStats() {
+	var channel1 = bot.channels.get("465143934851612672")
+	channel1.setName("Member Count: "+channel1.guild.members.size)
+	var channel2 = bot.channels.get("465144031576457216")
+	channel2.setName("Users: "+channel2.guild.members.filter(m=>!m.user.bot).size)
+	var channel3 = bot.channels.get("465144074996023316")
+	channel3.setName("Bots: "+channel3.guild.members.filter(m=>m.user.bot).size)
+}
+function updateChannelStats2() {
+	var channel1 = bot.channels.get("484433681193369616")
+	channel1.setName("Member Count: "+channel1.guild.members.size)
+	var channel2 = bot.channels.get("484433712000532511")
+	channel2.setName("Users: "+channel2.guild.members.filter(m=>!m.user.bot).size)
+	var channel3 = bot.channels.get("484433738285973504")
+	channel3.setName("Bots: "+channel3.guild.members.filter(m=>m.user.bot).size)
+}
+
 bot.on("ready", async function() {
     console.log("O. K.!")
-    bot.user.setPresence({ game: { name: "Splatoon 2 but its banned by Roskomnadzor"} })
+    bot.user.setPresence({ game: { name: "h"} })
     await refreshStats()
     await updateStats(timstats[0],timstats[1],timstats[2])
+	updateChannelStats()
+    await refreshStats(1)
+    await updateStats2(timstats[0],timstats[1],timstats[2])
+	updateChannelStats2()
     console.log("updated everything")
 })
 
@@ -46,6 +67,25 @@ async function updateStats(timstats0, timstats1, timstats2) {
     }
 }
 
+async function updateStats2(timstats0, timstats1, timstats2) {
+    timmessages = [,,]
+    if(timstats0 !== null) {
+        bot.channels.get("484389619798900738").fetchMessage("484434434691432468").then(m => {
+            m.edit("**TimStats**\nVersion: "+timstats0.version+"\nPing (may be inaccurate): "+bot.ping+"ms\nProfiles made: "+timstats0.profilessize+"\nBattle accounts made: "+timstats0.battleprofilessize+"\nhe does it!")
+        })
+    }
+    if(timstats1 !== null) {
+        bot.channels.get("484389619798900738").fetchMessage("484434455017029633").then(m => {
+            m.edit("**Server Stats**\nMembers: "+timstats1.members+"\nhe does it!")
+        })
+    }
+    if(timstats2 !== null) {
+        bot.channels.get("484389619798900738").fetchMessage("484434463678398467").then(m => {
+            m.edit("**Splat Stats**\nhe... doesn't do it yet (WIP)")
+        })
+    }
+}
+
 Object.size = function(obj) {
     var size = 0, key;
     for (key in obj) {
@@ -61,8 +101,15 @@ function clean(text) {
         return text;
 }
 
-async function refreshStats() {
-    timstats = [{version:"0.6 Alpha",profilessize:Object.size(profiles)-1,battleprofilessize:Object.size(profiles.battles)},{members: bot.guilds.get("433670865817829387").members.array().length},{avaivable: false}]
+async function refreshStats(server) {
+switch(server) {
+case 0:
+    timstats = [{version:"0.8 Alpha",profilessize:Object.size(profiles)-1,battleprofilessize:Object.size(profiles.battles)},{members: bot.guilds.get("433670865817829387").members.array().length},{avaivable: false}]
+break;
+case 1:
+    timstats = [{version:"0.8 Alpha",profilessize:Object.size(profiles)-1,battleprofilessize:Object.size(profiles.battles)},{members: bot.guilds.get("477516073453748237").members.array().length},{avaivable: false}]
+break;
+}
 }
 
 bot.on("message", msg => {
@@ -139,13 +186,27 @@ if(msg.content === "splat updatestats") {
 })
 
 bot.on("guildMemberAdd", bember => {
-refreshStats()
-updateStats(timstats[0],timstats[1],timstats[2])
+if (bember.guild.id === "477516073453748237") {
+	refreshStats(1)
+	updateChannelStats2()
+	updateStats2(timstats[0],timstats[1],timstats[2])
+}
 })
 
 bot.on("guildMemberRemove", bember => {
-    refreshStats()
-    updateStats(timstats[0],timstats[1],timstats[2])
+if (bember.guild.id === "477516073453748237") {
+	refreshStats(1)
+	updateChannelStats2()
+	updateStats2(timstats[0],timstats[1],timstats[2])
+} else if (bember.guild.id === "433670865817829387") {
+	refreshStats(0)
+	updateChannelStats()
+	updateStats(timstats[0],timstats[1],timstats[2])
+}
+
+	if(bember.guild.id === bot.channels.get("433670866304237579").guild.id) {
+		bot.channels.get("433670866304237579").send("since dyno is lazy, i'll have to do the work for him..\n"+bember.user.username+"#"+bember.user.discriminator+" has left us. rip...")
+	}
 })
 
 //aaa i keep having errors with this
