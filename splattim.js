@@ -104,10 +104,10 @@ function clean(text) {
 async function refreshStats(server) {
 switch(server) {
 case 0:
-    timstats = [{version:"0.8 Alpha",profilessize:Object.size(profiles)-1,battleprofilessize:Object.size(profiles.battles)},{members: bot.guilds.get("433670865817829387").members.array().length},{avaivable: false}]
+    timstats = [{version:"0.8.1 Alpha",profilessize:Object.size(profiles)-1,battleprofilessize:Object.size(profiles.battles)},{members: bot.guilds.get("433670865817829387").members.array().length},{avaivable: false}]
 break;
 case 1:
-    timstats = [{version:"0.8 Alpha",profilessize:Object.size(profiles)-1,battleprofilessize:Object.size(profiles.battles)},{members: bot.guilds.get("477516073453748237").members.array().length},{avaivable: false}]
+    timstats = [{version:"0.8.1 Alpha",profilessize:Object.size(profiles)-1,battleprofilessize:Object.size(profiles.battles)},{members: bot.guilds.get("477516073453748237").members.array().length},{avaivable: false}]
 break;
 }
 }
@@ -189,7 +189,8 @@ bot.on("guildMemberAdd", bember => {
 if (bember.guild.id === "477516073453748237") {
 	refreshStats(1)
 	updateChannelStats2()
-	updateStats2(timstats[0],timstats[1],timstats[2])
+    updateStats2(timstats[0],timstats[1],timstats[2])
+    bot.channels.get("478243661973553167").send("Hey, "+bember.user.username+", welcome to **Cool Cephalopods** :squid::octopus: :tada::hugging: ! Welcome aboard.")
 }
 })
 
@@ -197,7 +198,8 @@ bot.on("guildMemberRemove", bember => {
 if (bember.guild.id === "477516073453748237") {
 	refreshStats(1)
 	updateChannelStats2()
-	updateStats2(timstats[0],timstats[1],timstats[2])
+    updateStats2(timstats[0],timstats[1],timstats[2])
+    bot.channels.get("478243661973553167").send("**"+bember.user.username+"** has left on their journey.")
 } else if (bember.guild.id === "433670865817829387") {
 	refreshStats(0)
 	updateChannelStats()

@@ -10,7 +10,7 @@ exports.cmds = function(msg, params, bot) {
                 if(msg.author.id !== "209765088196821012") {
                     msg.channel.send("Commands for module **Debug** are owner-only. Sorry!")
                 } else {
-                    msg.channel.send("Commands for module **Debug**:\nsplat clearcooldown (userid) - clears a user's battle cooldown\nsplat debug [code] - evals the code\nsplat updatestats - update all the stats and save all stats")
+                    msg.channel.send("Commands for module **Debug**:\nsplat clearcooldown (userid) - clears a user's battle cooldown\nsplat debug [code] - evals the code\nsplat updatestats - update all the stats and save all stats\nsplat exec - execute a bash command")
                 }
                 break;
                 case "fun":
