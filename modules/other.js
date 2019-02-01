@@ -3,6 +3,7 @@ exports.cmds = function(msg, params, bot, profiles, vcReady) {
 const fs = require("fs")
 var opus = require('opusscript')
 var request = require('request')
+var minesweeper = require('minesweeper')
 //FUNCTIONS
 function makeProfile(id) {
     //i copied this from a site:tm:
@@ -95,6 +96,34 @@ function undeString(stringthing) {
 function cooldownStop(id) {
     profiles.battles[id]["onCooldown"] = false
     profiles.battles[id]["cooldown"] = null
+}
+
+function decimalToNumber(num) {
+    switch(num) {
+        case 1: return "one"; break;
+        case 2: return "two"; break;
+        case 3: return "three"; break;
+        case 4: return "four"; break;
+        case 5: return "five"; break;
+        case 6: return "six"; break;
+        case 7: return "seven"; break;
+        case 8: return "eight"; break;
+        case 9: return "nine"; break;
+        case 0: return "zero"; break;
+    }
+}
+
+function convertToSpoilerField(grid) {
+    var endmsg = new String()
+    grid.forEach(x => {
+        x.forEach(y => {
+            var tile = ":"+decimalToNumber(y.numAdjacentMines)+":"
+            if(y.isMine) tile = ":bomb:"
+            endmsg += " ||" + tile + "||"
+        })
+        endmsg += "\n"
+    })
+    return endmsg
 }
 
     //WOOMY
@@ -736,6 +765,18 @@ if(msg.content === "splat inspirobot") {
     request('http://inspirobot.me/api?generate=true',function(err,response,body) {
         msg.channel.send({files: [body]})
     })
+}
+
+if(msg.content === "splat minesweeper") {
+    var board = new minesweeper.Board(
+        minesweeper.generateMineArray({
+            rows: 10,
+            cols: 10,
+            mines: Math.floor(Math.random()*5+13)
+        })
+    )
+    var grid = board.grid()
+    msg.channel.send(convertToSpoilerField(grid))
 }
 
 /*if(msg.content.startsWith("splat points")) {
